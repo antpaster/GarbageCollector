@@ -125,7 +125,7 @@ public:
             }
         }
 
-        // 8) dtect resurrection: objects in unreachable that gained refcount > 0
+        // 8) detect resurrection: objects in unreachable that gained refcount > 0
         std::vector<GCObject*> to_destroy;
         std::vector<GCObject*> resurrected;
         for (auto* o : unreachable) {
