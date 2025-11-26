@@ -3,8 +3,26 @@
 # cmake ..
 # cmake --build .
 cmake_minimum_required(VERSION 3.15)
-project(GarbageCollector)
+project(GarbageCollector LANGUAGES CXX)
 
-add_executable(gc
-    test_main.cpp
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Enable testing
+include(CTest)
+enable_testing()
+
+# Add library
+add_library(gc
+    src/gc_object.cpp
+    src/gc_manager.cpp
 )
+
+target_include_directories(gc PUBLIC src)
+
+# Add executable demo
+add_executable(gc_demo src/main.cpp)
+target_link_libraries(gc_demo PRIVATE gc)
+
+# Add tests
+add_subdirectory(tests)
