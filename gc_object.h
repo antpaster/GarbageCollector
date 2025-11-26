@@ -1,5 +1,8 @@
 #pragma once
 #include <functional>
+#include <string>
+#include <vector>
+#include <iostream>
 
 // Base GCObject class
 class GCObject {
@@ -38,6 +41,48 @@ public:
             // Ensure unregister before delete to keep manager consistent.
             GCManager::instance().unregister_object(this);
             delete this;
+        }
+    }
+};
+
+class Obj : public GCObject {
+public:
+    std::string name;
+    std::vector<GCObject*> children;
+    bool run_finalizer_on_collect = false;
+    bool resurrect_in_finalizer = false;
+
+    Obj(const std::string& n) : name(n) {
+        tracked = true; // this class holds references, track it
+    }
+
+    ~Obj() override {
+        std::cout << "[Dtor] " << name << std::endl;
+    }
+
+    void add_child(GCObject* c) {
+        if (!c) {
+            return;
+        }
+        children.push_back(c);
+        c->incref();
+    }
+
+    void traverse_references(const std::function<void(GCObject*)>& visitor) override {
+        for (auto* c : children) {
+            visitor(c);
+        }
+    }
+
+    bool has_finalizer() const override {
+        return run_finalizer_on_collect;
+    }
+
+    void finalize() override {
+        std::cout << "[Finalize] " << name << std::endl;
+        if (resurrect_in_finalizer) {
+            std::cout << "[Finalize] resurrecting " << name << "by incref\n";
+            this->incref(); // resurrect: increase refcount so GC will treat as alive
         }
     }
 };
