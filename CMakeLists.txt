@@ -2,6 +2,7 @@
 # cd build
 # cmake ..
 # cmake --build .
+# cmake --build . --target clean # cleans the compiled files, object files, libraries, executables
 cmake_minimum_required(VERSION 3.15)
 project(GarbageCollector LANGUAGES CXX)
 
